@@ -96,6 +96,16 @@ targets:
         CODE_SIGN_IDENTITY: "-"
         CODE_SIGN_STYLE: Manual
         ENABLE_HARDENED_RUNTIME: NO
+        # OCCT's macOS slice is arm64 only.
+        ARCHS: arm64
+      configs:
+        # Release is signed for distribution outside the Mac App Store and
+        # notarized by scripts/build_mac_release.sh.
+        Release:
+          CODE_SIGN_IDENTITY: "Developer ID Application"
+          DEVELOPMENT_TEAM: 3C3BJSJ3RQ
+          ENABLE_HARDENED_RUNTIME: YES
+          OTHER_CODE_SIGN_FLAGS: "--timestamp"
     info:
       path: App/Info-macOS.plist
       properties:
