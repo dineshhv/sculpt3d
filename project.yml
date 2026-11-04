@@ -1,0 +1,109 @@
+name: Sculpt3D
+options:
+  bundleIdPrefix: com.higglerslab
+  deploymentTarget:
+    iOS: "18.0"
+    macOS: "15.0"
+  createIntermediateGroups: true
+
+settings:
+  base:
+    SWIFT_VERSION: "5.0"
+    CLANG_CXX_LANGUAGE_STANDARD: "c++17"
+    SWIFT_OBJC_BRIDGING_HEADER: App/Sources/Sculpt3D-Bridging-Header.h
+    HEADER_SEARCH_PATHS:
+      - $(SRCROOT)/Core/include
+      - $(SRCROOT)/Bridge
+      - $(SRCROOT)/App/Sources/Viewport
+      - $(SRCROOT)/third_party/occt-build/macos-install/include/opencascade
+    GCC_WARN_INHIBIT_ALL_WARNINGS: NO
+    OTHER_CPLUSPLUSFLAGS: ["$(inherited)", "-Wno-deprecated-declarations", "-Wno-documentation"]
+    DEAD_CODE_STRIPPING: YES
+    MARKETING_VERSION: "0.1.0"
+    CURRENT_PROJECT_VERSION: "1"
+    ENABLE_USER_SCRIPT_SANDBOXING: YES
+    GENERATE_INFOPLIST_FILE: NO
+
+targetTemplates:
+  Sculpt3DApp:
+    type: application
+    sources:
+      - path: App/Sources
+      - path: App/Resources
+      - path: Bridge
+      - path: Core
+        excludes: [tests]
+    dependencies:
+      - framework: third_party/OCCT.xcframework
+        embed: false
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: com.higglerslab.sculpt3d
+        PRODUCT_NAME: Sculpt3D
+        ASSETCATALOG_COMPILER_APPICON_NAME: AppIcon
+
+targets:
+  Sculpt3D-iOS:
+    templates: [Sculpt3DApp]
+    platform: iOS
+    settings:
+      base:
+        TARGETED_DEVICE_FAMILY: "1,2"
+        ARCHS: arm64
+        EXCLUDED_ARCHS[sdk=iphonesimulator*]: x86_64
+        CODE_SIGN_STYLE: Automatic
+    info:
+      path: App/Info-iOS.plist
+      properties:
+        CFBundleDisplayName: Sculpt3D
+        CFBundleShortVersionString: $(MARKETING_VERSION)
+        CFBundleVersion: $(CURRENT_PROJECT_VERSION)
+        LSRequiresIPhoneOS: true
+        UILaunchScreen: {}
+        UIApplicationSupportsIndirectInputEvents: true
+        UISupportsDocumentBrowser: true
+        LSSupportsOpeningDocumentsInPlace: true
+        UISupportedInterfaceOrientations: [UIInterfaceOrientationPortrait, UIInterfaceOrientationLandscapeLeft, UIInterfaceOrientationLandscapeRight]
+        UISupportedInterfaceOrientations~ipad: [UIInterfaceOrientationPortrait, UIInterfaceOrientationPortraitUpsideDown, UIInterfaceOrientationLandscapeLeft, UIInterfaceOrientationLandscapeRight]
+        CFBundleDocumentTypes: &docTypes
+          - CFBundleTypeName: Sculpt3D Model
+            CFBundleTypeRole: Editor
+            LSHandlerRank: Owner
+            LSItemContentTypes: [com.higglerslab.sculpt3d.model]
+          # Documents saved before the rename still open.
+          - CFBundleTypeName: Open3D Model
+            CFBundleTypeRole: Editor
+            LSHandlerRank: Owner
+            LSItemContentTypes: [com.higglerslab.open3d.model]
+        UTExportedTypeDeclarations: &utis
+          - UTTypeIdentifier: com.higglerslab.sculpt3d.model
+            UTTypeDescription: Sculpt3D Model
+            UTTypeConformsTo: [public.data, public.content]
+            UTTypeTagSpecification:
+              public.filename-extension: [sculpt3d]
+        UTImportedTypeDeclarations: &legacyUtis
+          - UTTypeIdentifier: com.higglerslab.open3d.model
+            UTTypeDescription: Open3D Model
+            UTTypeConformsTo: [public.data, public.content]
+            UTTypeTagSpecification:
+              public.filename-extension: [o3d]
+
+  Sculpt3D-macOS:
+    templates: [Sculpt3DApp]
+    platform: macOS
+    settings:
+      base:
+        CODE_SIGN_IDENTITY: "-"
+        CODE_SIGN_STYLE: Manual
+        ENABLE_HARDENED_RUNTIME: NO
+    info:
+      path: App/Info-macOS.plist
+      properties:
+        CFBundleDisplayName: Sculpt3D
+        CFBundleShortVersionString: $(MARKETING_VERSION)
+        CFBundleVersion: $(CURRENT_PROJECT_VERSION)
+        LSApplicationCategoryType: public.app-category.graphics-design
+        NSHumanReadableCopyright: © 2026 Higglers Lab
+        CFBundleDocumentTypes: *docTypes
+        UTExportedTypeDeclarations: *utis
+        UTImportedTypeDeclarations: *legacyUtis

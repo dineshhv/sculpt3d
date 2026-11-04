@@ -1,0 +1,9 @@
+build/
+DerivedData/
+*.xcodeproj/xcuserdata/
+*.xcodeproj/project.xcworkspace/xcuserdata/
+third_party/occt-src/
+third_party/occt-build/
+third_party/OCCT.xcframework/
+third_party/*.log
+.DS_Store
