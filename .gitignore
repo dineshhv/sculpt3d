@@ -1,9 +1,46 @@
+# Build and Derived Data
 build/
 DerivedData/
+
+# Xcode & Apple
 *.xcodeproj/xcuserdata/
 *.xcodeproj/project.xcworkspace/xcuserdata/
+*.xcworkspace/xcuserdata/
+xcuserdata/
+*.xcuserdatad/
+*.xcuserstate
+*.xcscmblueprint
+*.xccheckout
+
+# Third Party & Dependencies
 third_party/occt-src/
 third_party/occt-build/
 third_party/OCCT.xcframework/
-third_party/*.log
+
+# Logs
+*.log
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+.pytest_cache/
+.venv/
+venv/
+env/
+
+# Design & Script Generated Outputs
+Design/car/out/
+Design/car/dout/
+*.mp4
+forest-diorama*.png
+
+# Editors and IDEs
 .DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+.claude/
+.vscode/
+.idea/
