@@ -13,6 +13,8 @@ OpenCascade B-rep kernel.
 | `App/Sources/Viewport` | Metal renderer, orbit camera, CPU picking, sketch input, touch/Pencil and mouse/trackpad handling. |
 | `App/Sources/UI` | SwiftUI: model browser, toolbars, contextual action bar, live operation panel, menu commands. |
 | `App/Sources/MCP` | MCP server (Mac): JSON-RPC core, the modeling tools, and the localhost HTTP transport. |
+| `AppCore/` | Shared C++ app core behind a C API (`AppCore/API.md`): document, viewport (OpenGL ES 3), MCP server. Used by Windows and Android. |
+| `Windows/` | Windows app: WinUI 3 (C# / .NET 8) front end over `sculpt.dll` (AppCore + ANGLE). See `Windows/README.md`. |
 | `scripts/` | `build_occt.sh` (OpenCascade → `third_party/OCCT.xcframework`), `test_core.sh` (kernel and solver tests), `test_sketch_flow.sh` (headless sketch → extrude → edit test). |
 
 ## Build
@@ -27,13 +29,27 @@ Run the kernel and solver tests with `scripts/test_core.sh`, and the headless
 end-to-end sketch test with `scripts/test_sketch_flow.sh`. With the Mac app
 running, `scripts/test_mcp.py` models a part through the MCP server and checks it.
 
+### Windows
+
+On Windows 10/11 x64 with Visual Studio 2022 (Desktop C++), the .NET 8 SDK and
+Git, from an "x64 Native Tools Command Prompt for VS 2022":
+
+```powershell
+powershell -ExecutionPolicy Bypass -File scripts\build_windows_deps.ps1   # once, ~1h: OpenCascade + ANGLE
+powershell -ExecutionPolicy Bypass -File scripts\build_windows.ps1 -Run
+```
+
+The app is unpackaged and self-contained (no runtime installs). Details,
+controls and first-build troubleshooting are in `Windows/README.md`.
+
 ## MCP server
 
-The Mac app runs a [Model Context Protocol](https://modelcontextprotocol.io)
+The Mac and Windows apps run a [Model Context Protocol](https://modelcontextprotocol.io)
 server, so AI assistants can model in the open documents; changes show up live
 in the window. It listens only on `http://127.0.0.1:7317/mcp` (Streamable HTTP,
 plain JSON responses) and refuses browser requests from other origins. Turn it
-off, or copy the setup command, from **Sculpt3D ▸ MCP Server** in the menu bar.
+off, or copy the setup command, from **Sculpt3D ▸ MCP Server** in the menu bar
+(on Windows: the **MCP** menu).
 
 Add it to Claude Code:
 
@@ -57,6 +73,29 @@ Every modeling tool appends a feature to the parametric history and is
 trial-run first, so a failing operation reports its error without changing
 the model. Editing tools return an error while a sketch or tool panel is open
 in the app; finish or cancel it there first.
+
+## Android
+
+`Android/` is the Android app (Kotlin, Jetpack Compose, Material 3) over the
+shared C++ core in `AppCore/` (C API `AppCore/include/sculpt/sculpt_c.h`,
+documented in `AppCore/API.md`), which owns the model, sketching, the GLES 3
+viewport and the MCP server. Phones and tablets, light and dark.
+
+```bash
+scripts/build_occt.sh android-arm64     # once: OpenCascade for Android
+cd Android && ./gradlew :app:assembleDebug
+adb install -r app/build/outputs/apk/debug/app-debug.apk
+```
+
+MCP on Android: turn it on from the app menu (MCP Server…), then
+
+```bash
+adb forward tcp:7317 tcp:7317
+claude mcp add --transport http sculpt3d http://127.0.0.1:7317/mcp
+```
+
+See `Android/README.md` for details and `Android/docs/screenshots/` for the
+emulator verification run.
 
 ## Modeling features
 

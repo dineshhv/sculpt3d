@@ -1,6 +1,9 @@
 #!/usr/bin/env bash
 # Builds OpenCascade as static libraries for macOS, iOS and the iOS Simulator
 # and packages them as third_party/OCCT.xcframework (one merged libOCCT.a per slice).
+# `android-arm64` / `android-x64` build Android slices with the NDK into
+# third_party/occt-build/android-*-install (used by Android/app/src/main/cpp).
+# Windows slices are built on Windows by scripts/build_occt_windows.ps1.
 set -euo pipefail
 
 ROOT="$(cd "$(dirname "$0")/.." && pwd)"
@@ -8,6 +11,7 @@ SRC="$ROOT/third_party/occt-src"
 WORK="$ROOT/third_party/occt-build"
 OUT="$ROOT/third_party/OCCT.xcframework"
 JOBS="$(sysctl -n hw.ncpu)"
+NDK="${ANDROID_NDK:-$(ls -d "$HOME/Library/Android/sdk/ndk/"* 2>/dev/null | sort -V | tail -1)}"
 PLATFORMS="${*:-macos ios iossim}"
 
 common_flags=(
@@ -44,8 +48,15 @@ build_slice() {
   cmake --build "$bdir" -j "$JOBS"
   cmake --install "$bdir" > /dev/null
   # Merge every toolkit archive into one library so Xcode links a single file.
+  case "$name" in android-*) return ;; esac
   local libs; libs=$(find "$idir" -name 'libTK*.a')
   libtool -static -o "$WORK/$name-libOCCT.a" $libs 2> /dev/null
+}
+
+android_flags() {
+  # CMAKE_OSX_ARCHITECTURES from common_flags is ignored off Apple platforms.
+  echo -DCMAKE_TOOLCHAIN_FILE="$NDK/build/cmake/android.toolchain.cmake" -DANDROID_ABI="$1" \
+       -DANDROID_PLATFORM=android-28 -DANDROID_STL=c++_shared
 }
 
 for p in $PLATFORMS; do
@@ -53,8 +64,13 @@ for p in $PLATFORMS; do
     macos)  build_slice macos  -DCMAKE_OSX_DEPLOYMENT_TARGET=14.0 ;;
     ios)    build_slice ios    -DCMAKE_SYSTEM_NAME=iOS -DCMAKE_OSX_SYSROOT=iphoneos -DCMAKE_OSX_DEPLOYMENT_TARGET=17.0 ;;
     iossim) build_slice iossim -DCMAKE_SYSTEM_NAME=iOS -DCMAKE_OSX_SYSROOT=iphonesimulator -DCMAKE_OSX_DEPLOYMENT_TARGET=17.0 ;;
+    android-arm64) build_slice android-arm64 $(android_flags arm64-v8a) ;;
+    android-x64)   build_slice android-x64 $(android_flags x86_64) ;;
   esac
 done
+
+# Android-only runs don't touch the xcframework.
+case "$PLATFORMS" in *mac*|*ios*) ;; *) exit 0 ;; esac
 
 rm -rf "$OUT"
 args=()

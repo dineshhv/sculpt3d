@@ -16,6 +16,14 @@ xcuserdata/
 third_party/occt-src/
 third_party/occt-build/
 third_party/OCCT.xcframework/
+third_party/vcpkg/
+
+# Windows (WinUI app and native build outputs)
+Windows/Sculpt3D/bin/
+Windows/Sculpt3D/obj/
+Windows/.vs/
+*.user
+dist/
 
 # Logs
 *.log
