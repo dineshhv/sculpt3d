@@ -99,7 +99,12 @@ struct DocumentView: View {
         ContentView(store: store, viewport: viewport)
             .focusedSceneObject(store)
             .focusedSceneObject(viewport)
+            // The session is built once, possibly before the file was read
+            // (iPadOS opens the window first). Edits flow store → document, so
+            // the two only differ when the file itself supplied new contents.
+            .onChange(of: document.features) { syncFromDocument() }
             .onAppear {
+                syncFromDocument()
                 store.onFeaturesChanged = { features in document.features = features }
                 store.onSettingsChanged = { settings in document.settings = settings }
                 DocumentRegistry.shared.register(store, viewport, name: name)
@@ -125,5 +130,10 @@ struct DocumentView: View {
                 }
             }
             #endif
+    }
+
+    private func syncFromDocument() {
+        guard document.features != store.features else { return }
+        store.reload(features: document.features, settings: document.settings)
     }
 }

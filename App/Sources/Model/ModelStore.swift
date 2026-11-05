@@ -183,6 +183,18 @@ final class ModelStore: ObservableObject {
         regenerate()
     }
 
+    /// Replaces the whole model with contents read from the file (no undo
+    /// step). Used when the document's contents arrive after the window was
+    /// built, as iPadOS does when opening a document.
+    func reload(features newFeatures: [Feature], settings newSettings: ProjectSettings) {
+        undoStack.removeAll()
+        redoStack.removeAll()
+        draft = nil
+        features = newFeatures
+        settings = newSettings
+        regenerate()
+    }
+
     var canUndo: Bool { !undoStack.isEmpty }
     var canRedo: Bool { !redoStack.isEmpty }
     var bodyIds: [Int] { meshes.keys.sorted() }
