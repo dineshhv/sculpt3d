@@ -1,6 +1,7 @@
 #!/usr/bin/env bash
 # Builds Sculpt3D for Mac, signed with the Developer ID Application
-# certificate, and (when a notary profile exists) notarizes and staples it.
+# certificate, notarizes and staples it, then packages it as a DMG
+# (scripts/make_dmg.sh), also signed and notarized.
 #
 #   scripts/build_mac_release.sh                 # sign + notarize (profile "sculpt3d-notary")
 #   NOTARY_PROFILE=other scripts/build_mac_release.sh
@@ -51,6 +52,7 @@ ditto -c -k --keepParent "$APP" "$ZIP"
 
 if [[ -n "${SKIP_NOTARIZE:-}" ]]; then
   echo "Signed (not notarized): $APP"
+  "$ROOT/scripts/make_dmg.sh" "$APP"
   exit 0
 fi
 xcrun notarytool submit "$ZIP" --keychain-profile "$PROFILE" --wait
@@ -58,3 +60,4 @@ xcrun stapler staple "$APP"
 rm "$ZIP" && ditto -c -k --keepParent "$APP" "$ZIP"
 spctl --assess --type execute --verbose "$APP"
 echo "Signed and notarized: $APP ($ZIP)"
+"$ROOT/scripts/make_dmg.sh" "$APP"
