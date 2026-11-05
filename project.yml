@@ -52,9 +52,13 @@ targets:
         ARCHS: arm64
         EXCLUDED_ARCHS[sdk=iphonesimulator*]: x86_64
         CODE_SIGN_STYLE: Automatic
+        DEVELOPMENT_TEAM: 3C3BJSJ3RQ
     info:
       path: App/Info-iOS.plist
       properties:
+        # Only standard OS networking; no proprietary encryption (skips the
+        # export-compliance question on every TestFlight build).
+        ITSAppUsesNonExemptEncryption: false
         CFBundleDisplayName: Sculpt3D
         CFBundleShortVersionString: $(MARKETING_VERSION)
         CFBundleVersion: $(CURRENT_PROJECT_VERSION)

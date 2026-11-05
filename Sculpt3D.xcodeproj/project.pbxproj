@@ -429,6 +429,7 @@
 				LastUpgradeCheck = 1430;
 				TargetAttributes = {
 					7095740896105BD7D4EB3EA5 = {
+						DevelopmentTeam = 3C3BJSJ3RQ;
 						ProvisioningStyle = Automatic;
 					};
 					A8D3865BE7C69ECCA72E7AD8 = {
@@ -602,6 +603,7 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				CODE_SIGN_STYLE = Automatic;
+				DEVELOPMENT_TEAM = 3C3BJSJ3RQ;
 				"EXCLUDED_ARCHS[sdk=iphonesimulator*]" = x86_64;
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
@@ -805,6 +807,7 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				CODE_SIGN_STYLE = Automatic;
+				DEVELOPMENT_TEAM = 3C3BJSJ3RQ;
 				"EXCLUDED_ARCHS[sdk=iphonesimulator*]" = x86_64;
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
