@@ -1,0 +1,72 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <!--
+    Sculpt3D for Windows: a WinUI 3 (Windows App SDK) front end over the shared
+    C++ core (sculpt.dll, built by Windows/CMakeLists.txt).
+
+    Unpackaged and self-contained: the exe runs without installing the Windows
+    App SDK runtime or .NET. The whole UI is built in C# (no .xaml files), so the
+    project type-checks with plain `dotnet build` and there is no XAML compiler
+    step to go wrong.
+
+    Build: scripts\build_windows.ps1 (builds sculpt.dll first and copies the
+    native DLLs next to Sculpt3D.exe).
+  -->
+  <PropertyGroup>
+    <OutputType>WinExe</OutputType>
+    <TargetFramework>net8.0-windows10.0.22621.0</TargetFramework>
+    <TargetPlatformMinVersion>10.0.17763.0</TargetPlatformMinVersion>
+    <SupportedOSPlatformVersion>10.0.17763.0</SupportedOSPlatformVersion>
+    <RootNamespace>Sculpt3D</RootNamespace>
+    <AssemblyName>Sculpt3D</AssemblyName>
+    <Product>Sculpt3D</Product>
+    <Company>Higglers Lab</Company>
+    <Version>1.0.0</Version>
+    <ApplicationManifest>app.manifest</ApplicationManifest>
+    <ApplicationIcon>Assets\Sculpt3D.ico</ApplicationIcon>
+    <Platforms>x64</Platforms>
+    <PlatformTarget>x64</PlatformTarget>
+    <RuntimeIdentifier>win-x64</RuntimeIdentifier>
+    <UseWinUI>true</UseWinUI>
+    <WindowsPackageType>None</WindowsPackageType>
+    <WindowsAppSDKSelfContained>true</WindowsAppSDKSelfContained>
+    <SelfContained>true</SelfContained>
+    <EnableMsixTooling>true</EnableMsixTooling>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>disable</ImplicitUsings>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+    <LangVersion>12.0</LangVersion>
+    <!-- Program.cs has its own Main (single instance + file activation). -->
+    <DefineConstants>$(DefineConstants);DISABLE_XAML_GENERATED_MAIN</DefineConstants>
+    <!-- No .xaml pages: the UI is constructed in code. -->
+    <EnableDefaultPageItems>false</EnableDefaultPageItems>
+    <EnableDefaultApplicationDefinition>false</EnableDefaultApplicationDefinition>
+    <Deterministic>true</Deterministic>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.WindowsAppSDK" Version="1.6.250602001" />
+    <PackageReference Include="Microsoft.Windows.SDK.BuildTools" Version="10.0.26100.1742" />
+    <PackageReference Include="Microsoft.Graphics.Win2D" Version="1.3.2" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Content Include="Assets\BrandMark.png" CopyToOutputDirectory="PreserveNewest" />
+    <Content Include="Assets\Sculpt3D.ico" CopyToOutputDirectory="PreserveNewest" />
+  </ItemGroup>
+
+  <!--
+    The native core. scripts\build_windows.ps1 builds it into build\windows-native
+    and copies it next to the exe after `dotnet build`; when it is already built,
+    these items copy it on every build too (so F5 in Visual Studio works).
+  -->
+  <PropertyGroup>
+    <SculptNativeDir>$(MSBuildThisFileDirectory)..\..\build\windows-native\appcore\</SculptNativeDir>
+    <AngleBinDir>$(MSBuildThisFileDirectory)..\..\third_party\vcpkg\installed\x64-windows\bin\</AngleBinDir>
+  </PropertyGroup>
+  <ItemGroup>
+    <None Include="$(SculptNativeDir)sculpt.dll" Condition="Exists('$(SculptNativeDir)sculpt.dll')" Link="sculpt.dll" CopyToOutputDirectory="PreserveNewest" Visible="false" />
+    <None Include="$(AngleBinDir)libEGL.dll" Condition="Exists('$(AngleBinDir)libEGL.dll')" Link="libEGL.dll" CopyToOutputDirectory="PreserveNewest" Visible="false" />
+    <None Include="$(AngleBinDir)libGLESv2.dll" Condition="Exists('$(AngleBinDir)libGLESv2.dll')" Link="libGLESv2.dll" CopyToOutputDirectory="PreserveNewest" Visible="false" />
+    <None Include="$(AngleBinDir)zlib1.dll" Condition="Exists('$(AngleBinDir)zlib1.dll')" Link="zlib1.dll" CopyToOutputDirectory="PreserveNewest" Visible="false" />
+  </ItemGroup>
+</Project>

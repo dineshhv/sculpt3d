@@ -1,0 +1,56 @@
+{
+  "features" : [
+
+  ],
+  "settings" : {
+    "appearance" : {
+
+    },
+    "bodyNames" : {
+
+    },
+    "camera" : {
+      "fieldOfView" : 40,
+      "orthographic" : false
+    },
+    "environment" : {
+      "ambientOcclusion" : true,
+      "background" : [
+        0.9,
+        0.91,
+        0.93
+      ],
+      "castShadows" : true,
+      "gradient" : true,
+      "groundShadow" : true,
+      "lightAzimuth" : 35,
+      "lightElevation" : 50,
+      "lightIntensity" : 1,
+      "occlusionStrength" : 1,
+      "shadowSoftness" : 0.45,
+      "showGrid" : true,
+      "smoothShading" : true
+    },
+    "hiddenBodies" : [
+
+    ],
+    "hiddenItems" : [
+
+    ],
+    "snap" : {
+      "distantEdges" : true,
+      "grid" : true,
+      "guideLines" : true,
+      "guidePoints" : true,
+      "points3D" : true,
+      "showGuidePoints" : true,
+      "showHints" : true
+    },
+    "snapping" : true,
+    "units" : "mm",
+    "variables" : [
+
+    ]
+  },
+  "version" : 2
+}
